@@ -2,14 +2,17 @@
 
 class ToDoLogika:
     def __init__(self):
+
         # Tukaj bomo imeli seznam opravil v spominu
         self.opravila = []
 
-        # Ustvarimo vmesnik in mu podamo SEBE (self), torej celoten razred z logiko
+        # v vmesnik shranimo celo logiko
         self.vmesnik = ToDoView(self)
 
     def dodaj_opravilo(self):
         print("Logika: Dodajam opravilo...")
+        novo_opravilo = self.vmesnik.vnos.get()
+        self.vmesnik.ListBox.
 
     def brisi_opravilo(self):
         print("Logika: Brišem opravilo...")
