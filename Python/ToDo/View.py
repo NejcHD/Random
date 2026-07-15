@@ -1,4 +1,6 @@
 ﻿import tkinter as tk
+from tkcalendar import DateEntry
+
 
 class ToDoView:
     def __init__(self,logika):   # tukaj spremeje vmsenik iz logike ter ga poimenujemo logika
@@ -18,8 +20,12 @@ class ToDoView:
         self.button3 = tk.Button(self.okvir_gumbov, text="Done",  width=10, command=self.logika.opravljeno_opravilo)
         self.button3.pack(side=tk.LEFT, padx=5)
 
-        self.vnos = tk.Entry(self.okno, width=30)
-        self.vnos.pack(pady=30)
+        self.okvir_vnosa = tk.Frame(self.okno)
+        self.okvir_vnosa.pack(pady = 20)
+        self.vnos = tk.Entry(self.okvir_vnosa, width=30)
+        self.vnos.pack(pady=30, side=tk.LEFT, padx=10)
+        self.vnosDatum = DateEntry(self.okvir_vnosa, width=15, date_pattern='dd.mm.yyyy')
+        self.vnosDatum.pack(pady=10, padx=10, side=tk.RIGHT)
 
         self.ListBox = tk.Listbox(self.okno, width=300, height=250)
         self.ListBox.pack(side=tk.BOTTOM, pady=30, padx = 20)
