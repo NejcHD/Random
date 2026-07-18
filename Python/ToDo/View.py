@@ -2,7 +2,7 @@
 from tkcalendar import DateEntry
 
 class ToDoView:
-    def __init__(self, logika):   # tukaj spremeje vmsenik iz logike ter ga poimenujemo logika
+    def __init__(self, logika):
         self.logika = logika
         self.okno = tk.Tk()
         self.okno.title("ToDo App")
@@ -43,10 +43,11 @@ class ToDoView:
 
     def skrij_okno(self, *args):
         print("Vmesnik: Skrivam okno v ozadje...")
-        self.okno.withdraw()  # 👻 Skrije okno z zaslona, program pa teče naprej
+        self.okno.withdraw()
 
     def prikazi_okno(self, *args):
         print("Vmesnik: Prikazujem okno...")
+        # Varno preusmerimo klic v Tkinter nit
         self.okno.after(0, self._prikazi_okno)
 
     def _prikazi_okno(self):
