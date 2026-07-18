@@ -1,19 +1,49 @@
 ﻿from tkinter import Listbox
-
 from View import ToDoView
 import json
+from PIL import Image, ImageDraw
+import pystray
+import threading
 
 class ToDoLogika:
     def __init__(self):
         # Tukaj bomo imeli seznam opravil v spominu
         self.opravila = []
-
         self.indeks_za_urejanje = None
 
         # v vmesnik shranimo celo logiko
         self.vmesnik = ToDoView(self)
-
         self.nalozi_opravila()
+
+        # slika za service
+        slika = Image.new("RGB", (64, 64), "blue")
+        narisi = ImageDraw.Draw(slika)
+        narisi.rectangle((16, 16, 48, 48), fill="red")
+
+        # Ustvarimo meni za desni klik
+        # S tem ko akcijo ob kliku zaženemo v ločeni niti (threading.Thread),
+        # preprečimo zamrznitev pystray zanke na Linuxu, hkrati pa deluje nemoteno na Windowsih.
+        meni = pystray.Menu(
+            pystray.MenuItem("Prikaži", lambda: threading.Thread(target=self.vmesnik.prikazi_okno).start()),
+            pystray.MenuItem("Izhod", lambda: threading.Thread(target=self.zahtevaj_izhod).start())
+        )
+        #  Ustvarimo pystray ikono
+        self.ikona = pystray.Icon("todo_app", slika, "ToDo Aplikacija", meni)
+
+        #  Poženemo ikono v ozadju (v svoji niti)
+        self.nit_ikone = threading.Thread(target=self.ikona.run, daemon=True)
+        self.nit_ikone.start()
+
+    def zahtevaj_izhod(self):
+        print("Logika: Prejemam zahtevo za izhod...")
+        # Varno porinemo uničenje okna v glavno Tkinter nit preko .after()
+        self.vmesnik.okno.after(0, self.izhod_programa)
+
+    def izhod_programa(self):
+        print("Logika: Popolnoma zapiram aplikacijo...")
+        # Ta vrstni red deluje povsod: najprej uničimo okno, nato ugasnemo ikono v ozadju
+        self.vmesnik.okno.destroy()
+        self.ikona.stop()
 
     def dodaj_opravilo(self):
         print("Logika: Dodajam opravilo...")
@@ -61,6 +91,7 @@ class ToDoLogika:
         if izbrano:
             indeks = izbrano[0]
             self.vmesnik.ListBox.itemconfig(indeks, bg="lightgreen")
+            self.shrani_opravila()
         else:
             print("Ni izbranega opravila")
 
@@ -93,25 +124,45 @@ class ToDoLogika:
         self.vmesnik.button1.config(text="Shrani")
 
     def shrani_opravila(self):
-        vsa_opravila = list(self.vmesnik.ListBox.get(0,"end"))
+        vsa_opravila = []
+        stevilo_elementov = self.vmesnik.ListBox.size()
+
+        # Z zanko se sprehodimo skozi vse vrstice v ListBoxu
+        for i in range(stevilo_elementov):
+            tekst = self.vmesnik.ListBox.get(i)
+            barva = self.vmesnik.ListBox.itemconfig(i, "bg")[-1]
+            je_opravljeno = (barva == "lightgreen")
+
+            # Ustvarimo slovar s podatki in ga dodamo v seznam
+            slovar_opravila = {
+                "tekst": tekst,
+                "opravljeno": je_opravljeno
+            }
+            vsa_opravila.append(slovar_opravila)
 
         with open("opravila.json","w") as f:
             json.dump(vsa_opravila,f)
 
     def nalozi_opravila(self):
         try:
-            with open("opravila.json","r") as f:
-                self.vmesnik.ListBox.delete(0,"end")
+            with open("opravila.json", "r") as f:
                 shranjena_opravila = json.load(f)
 
-            for a in shranjena_opravila:
-                self.vmesnik.ListBox.insert("end",a)
+            # Najprej popolnoma izpraznimo ListBox
+            self.vmesnik.ListBox.delete(0, "end")
+
+            # Sprehodimo se skozi naložene slovarje
+            for i, opravilo in enumerate(shranjena_opravila):
+                # Vstavimo tekst opravila
+                self.vmesnik.ListBox.insert("end", opravilo["tekst"])
+
+                # Če je v slovarju označeno kot opravljeno, vrstico obarvamo zeleno
+                if opravilo["opravljeno"]:
+                    self.vmesnik.ListBox.itemconfig(i, bg="lightgreen")
 
             print("Opravila uspešno naložena!")
-
         except FileNotFoundError:
             print("Datoteka opravila.json še ne obstaja.")
-
 
     def zazeni(self):
         self.vmesnik.zazeni()

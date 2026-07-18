@@ -1,15 +1,12 @@
 ﻿import tkinter as tk
 from tkcalendar import DateEntry
 
-
 class ToDoView:
-    def __init__(self,logika):   # tukaj spremeje vmsenik iz logike ter ga poimenujemo logika
+    def __init__(self, logika):   # tukaj spremeje vmsenik iz logike ter ga poimenujemo logika
         self.logika = logika
         self.okno = tk.Tk()
         self.okno.title("ToDo App")
         self.okno.geometry("400x500")
-
-
 
         self.okvir_gumbov = tk.Frame(self.okno)
         self.okvir_gumbov.pack(side = tk.TOP, pady=10)
@@ -29,7 +26,6 @@ class ToDoView:
         self.vnosDatum = DateEntry(self.okvir_vnosa, width=10, date_pattern='dd.mm.yyyy')
         self.vnosDatum.pack(pady=10, padx=10, side=tk.LEFT)
 
-
         self.prioriteta = tk.StringVar(value="Srednja")
         self.izbira_prioritete = tk.OptionMenu(
             self.okvir_vnosa,
@@ -42,6 +38,21 @@ class ToDoView:
 
         self.ListBox = tk.Listbox(self.okno, width=300, height=250)
         self.ListBox.pack(side=tk.BOTTOM, pady=30, padx = 20)
+
+        self.okno.protocol("WM_DELETE_WINDOW", self.skrij_okno)
+
+    def skrij_okno(self, *args):
+        print("Vmesnik: Skrivam okno v ozadje...")
+        self.okno.withdraw()  # 👻 Skrije okno z zaslona, program pa teče naprej
+
+    def prikazi_okno(self, *args):
+        print("Vmesnik: Prikazujem okno...")
+        self.okno.after(0, self._prikazi_okno)
+
+    def _prikazi_okno(self):
+        self.okno.deiconify()
+        self.okno.lift()
+        self.okno.focus_force()
 
     def zazeni(self):
         self.okno.mainloop()
