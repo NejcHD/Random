@@ -24,7 +24,7 @@ for kategorija, koncnice in Kategorije.items():    #gremo skopzi vse kljuce= kat
 
 
 
-for datoteka in pot_do_prenosov.iterdir():
+for datoteka in pot_do_prenosov.iterdir():  #iterdir pregleda ta direktori
 
     if datoteka.is_file():
         izvlecena_koncnica = datoteka.suffix.lower()
