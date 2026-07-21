@@ -4,7 +4,7 @@ from pathlib import Path  # ugotovi na akterem  sistemu tece
 
 Kategorije = {
     "Dokumenti" : [".pdf", ".docx", ".txt"],
-    "Slike" : [".jpg", ".png", ".gif", "webp"],
+    "Slike" : [".jpg", ".png", ".gif", ".webp"],
     "Video": [".mp4", ".mkv", ".avi"],
     "Glasba": [".mp3", ".wav", ".flac"],
 }
@@ -39,4 +39,4 @@ for datoteka in pot_do_prenosov.iterdir():  #iterdir pregleda ta direktori
 
 
 
-print("🎉 Priden Python! Downloads folder je uspešno pospravljen!")
+print("Priden Python! Downloads folder je uspešno pospravljen!")
