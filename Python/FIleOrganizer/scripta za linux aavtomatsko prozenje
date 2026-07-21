@@ -1,0 +1,5 @@
+1. crontab -e
+
+2. 0 18 * * * /usr/bin/python3 /home/skrttt/Git_code/Random/Python/FileOrganizer.py
+
+    - cas       -pot do pythona     -pod to skripte
